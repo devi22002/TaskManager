@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.taskmanager.databinding.FragmentProfileBinding
 
@@ -18,7 +19,16 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        binding.tvName.text = "User TaskManager"
+        // Set profile data
+        binding.tvName.text = "Aulia Rahman"
+        binding.tvNpm.text = "NPM : 140810220091"
+        binding.tvProdi.text = "Prodi : Teknik Informatika"
+        binding.tvEmail.text = "aulia220031@mail.unpad.ac.id"
+
+        // Logout action
+        binding.btnLogout.setOnClickListener {
+            Toast.makeText(requireContext(), "Logout berhasil", Toast.LENGTH_SHORT).show()
+        }
 
         return binding.root
     }
