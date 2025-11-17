@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Title -->
+        <TextView
+            android:text="Tambah Tugas"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Tugas Baru"
+            android:textSize="14sp"
+            android:textColor="#777"
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- Judul -->
+        <TextView
+            android:text="Judul Tugas"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/inputTitle"
+            android:hint="Cari tugas atau mata kuliah..."
+            android:padding="16dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"/>
+
+        <!-- Deskripsi -->
+        <TextView
+            android:text="Deskripsi"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/inputDescription"
+            android:hint="Tulis deskripsi tugas..."
+            android:padding="16dp"
+            android:minHeight="120dp"
+            android:gravity="top"
+            android:background="@drawable/bg_input"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Dropdown Mata Kuliah -->
+        <TextView
+            android:text="Mata Kuliah"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/dropdownMatkul"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/txtSelectedMatkul"
+                android:text="Pilih Mata Kuliah"
+                android:textColor="#000"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:src="@drawable/ic_arrow_down"
+                android:layout_width="20dp"
+                android:layout_height="20dp"/>
+        </LinearLayout>
+
+        <!-- Deadline -->
+        <TextView
+            android:text="Deadline Tugas"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/pickDeadline"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/txtDeadline"
+                android:text="Pilih Tanggal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:src="@drawable/ic_calendar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"/>
+        </LinearLayout>
+
+        <!-- Tombol Buat -->
+        <Button
+            android:id="@+id/btnCreateTask"
+            android:text="Buat Tugas"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:background="#000000"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#000"/>
+
+    </LinearLayout>
+
+</ScrollView>
