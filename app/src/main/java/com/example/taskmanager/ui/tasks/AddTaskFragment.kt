@@ -24,7 +24,7 @@ class AddTaskFragment : Fragment() {
         "Pemrograman Mobile", "Sistem Basis Data", "Kalkulus", "Algoritma Struktur Data", "Jaringan Komputer"
     )
 
-    private var selectedDeadlineMillis: Long = System.currentTimeMillis()
+    private var selectedDeadlineMillis: Long = -1L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogAddTaskBinding.inflate(inflater, container, false)
@@ -67,14 +67,22 @@ class AddTaskFragment : Fragment() {
                 binding.inputTitle.error = "Judul harus diisi"
                 return@setOnClickListener
             }
+
             if (desc.isEmpty()) {
                 binding.inputDescription.error = "Deskripsi harus diisi"
                 return@setOnClickListener
             }
+
             if (subject.isNullOrEmpty()) {
                 Toast.makeText(requireContext(), "Pilih mata kuliah", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            if (selectedDeadlineMillis == -1L) {
+                Toast.makeText(requireContext(), "Deadline harus dipilih", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
 
             val t = TaskModel(
                 title = title,

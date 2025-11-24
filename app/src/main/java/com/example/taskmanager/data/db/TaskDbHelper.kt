@@ -54,9 +54,7 @@ class TaskDbHelper(context: Context) :
             put(COL_PRIORITY, task.priority)
             put(COL_STATUS, task.status)
         }
-        val id = db.insert(TABLE_TASKS, null, cv)
-        db.close()
-        return id
+        return db.insert(TABLE_TASKS, null, cv)
     }
 
     fun updateTask(task: TaskModel): Int {
@@ -69,22 +67,18 @@ class TaskDbHelper(context: Context) :
             put(COL_PRIORITY, task.priority)
             put(COL_STATUS, task.status)
         }
-        val rows = db.update(TABLE_TASKS, cv, "$COL_ID = ?", arrayOf(task.id.toString()))
-        db.close()
-        return rows
+        return db.update(TABLE_TASKS, cv, "$COL_ID = ?", arrayOf(task.id.toString()))
     }
 
     fun deleteTask(id: Long): Int {
         val db = writableDatabase
-        val rows = db.delete(TABLE_TASKS, "$COL_ID = ?", arrayOf(id.toString()))
-        db.close()
-        return rows
+        return db.delete(TABLE_TASKS, "$COL_ID = ?", arrayOf(id.toString()))
     }
 
     fun getAllTasks(): List<TaskModel> {
         val list = mutableListOf<TaskModel>()
         val db = readableDatabase
-        val cursor: Cursor = db.query(TABLE_TASKS, null, null, null, null, null, "$COL_DEADLINE ASC")
+        val cursor = db.query(TABLE_TASKS, null, null, null, null, null, "$COL_DEADLINE ASC")
         cursor.use {
             if (it.moveToFirst()) {
                 do {
@@ -101,7 +95,6 @@ class TaskDbHelper(context: Context) :
                 } while (it.moveToNext())
             }
         }
-        db.close()
         return list
     }
 }
