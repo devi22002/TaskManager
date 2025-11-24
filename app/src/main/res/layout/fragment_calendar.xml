@@ -1,100 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="18dp"
-    android:background="#F7F3FF">
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+    <TextView
+        android:text="Kalender"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kalender Tugas"
-            android:textSize="21sp"
-            android:textStyle="bold"
-            android:textColor="#232336"
-            android:paddingTop="6dp"/>
-
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Timeline semua tugas kuliah"
-            android:textSize="13sp"
-            android:textColor="#7A7A81"
-            android:paddingBottom="10dp" />
-
-        <!-- Calendar Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="6dp"
-            android:background="#FFFFFF"
-            android:padding="16dp">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-
-                <!-- Month Header -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp">
-
-                    <ImageView
-                        android:id="@+id/btnPrev"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:padding="4dp"
-                        android:src="@android:drawable/ic_media_previous"/>
-
-                    <TextView
-                        android:id="@+id/tvMonthYear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="April 2025"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#232336"
-                        android:layout_marginHorizontal="18dp"/>
-
-                    <ImageView
-                        android:id="@+id/btnNext"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:padding="4dp"
-                        android:src="@android:drawable/ic_media_next"/>
-
-                </LinearLayout>
-
-                <!-- Calendar Grid -->
-                <GridLayout
-                    android:id="@+id/gridCalendar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="7"
-                    android:rowCount="7"
-                    android:useDefaultMargins="true"
-                    android:alignmentMode="alignBounds"
-                    android:paddingTop="6dp"/>
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

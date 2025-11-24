@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.taskmanager.data.db.TaskDbHelper
+import androidx.fragment.app.viewModels
 import com.example.taskmanager.data.model.TaskModel
 import com.example.taskmanager.databinding.DialogAddTaskBinding
+import com.example.taskmanager.viewmodel.TaskViewModel
 import java.util.Calendar
 
 class AddTaskFragment : Fragment() {
@@ -18,11 +19,9 @@ class AddTaskFragment : Fragment() {
     private var _binding: DialogAddTaskBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var db: TaskDbHelper
-
+    private val vm: TaskViewModel by viewModels(ownerProducer = { requireActivity() })
     private val listMatkul = listOf(
-        "Pemrograman Mobile", "Sistem Basis Data", "Kalkulus",
-        "Algoritma Struktur Data", "Jaringan Komputer"
+        "Pemrograman Mobile", "Sistem Basis Data", "Kalkulus", "Algoritma Struktur Data", "Jaringan Komputer"
     )
 
     private var selectedDeadlineMillis: Long = System.currentTimeMillis()
@@ -33,9 +32,7 @@ class AddTaskFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        db = TaskDbHelper(requireContext())
-
-        // Dropdown choose subject
+        // Dropdown open dialog
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, listMatkul)
         binding.dropdownMatkul.setOnClickListener {
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
@@ -46,7 +43,7 @@ class AddTaskFragment : Fragment() {
                 .show()
         }
 
-        // Date picker
+        // date picker
         binding.pickDeadline.setOnClickListener {
             val cal = Calendar.getInstance()
             val dpd = DatePickerDialog(requireContext(),
@@ -56,20 +53,16 @@ class AddTaskFragment : Fragment() {
                     selectedDeadlineMillis = c.timeInMillis
                     binding.txtDeadline.text = "$d/${m + 1}/$y"
                 },
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
             )
             dpd.show()
         }
 
-        // Save button
         binding.btnCreateTask.setOnClickListener {
             val title = binding.inputTitle.text.toString().trim()
             val desc = binding.inputDescription.text.toString().trim()
             val subject = binding.txtSelectedMatkul.text.toString().takeIf { it != "Pilih Mata Kuliah" }
-
-            // Validation
+            // validate
             if (title.isEmpty()) {
                 binding.inputTitle.error = "Judul harus diisi"
                 return@setOnClickListener
@@ -83,7 +76,7 @@ class AddTaskFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val task = TaskModel(
+            val t = TaskModel(
                 title = title,
                 description = desc,
                 subject = subject,
@@ -92,12 +85,10 @@ class AddTaskFragment : Fragment() {
                 status = 0
             )
 
-            val insertedId = db.insertTask(task)
-            if (insertedId > 0) {
-                Toast.makeText(requireContext(), "Tugas berhasil disimpan", Toast.LENGTH_SHORT).show()
+            vm.addTask(t) { id ->
+                Toast.makeText(requireContext(), "Tugas tersimpan", Toast.LENGTH_SHORT).show()
+                // kembali ke daftar tugas
                 requireActivity().supportFragmentManager.popBackStack()
-            } else {
-                Toast.makeText(requireContext(), "Gagal menyimpan tugas", Toast.LENGTH_SHORT).show()
             }
         }
     }
