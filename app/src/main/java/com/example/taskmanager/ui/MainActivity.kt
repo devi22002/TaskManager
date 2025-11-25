@@ -10,14 +10,21 @@ import com.example.taskmanager.ui.profile.ProfileFragment
 import com.example.taskmanager.ui.tasks.AddTaskFragment
 import com.example.taskmanager.ui.tasks.TaskListFragment
 import com.example.taskmanager.ui.calendar.CalendarFragment
+import com.example.taskmanager.viewmodel.TaskViewModel
+import androidx.activity.viewModels
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: TaskViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel.sync()
 
         // default fragment
         openNoBackstack(HomeFragment())

@@ -2,7 +2,6 @@ package com.example.taskmanager.data.db
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.taskmanager.data.model.TaskModel
@@ -12,7 +11,7 @@ class TaskDbHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "taskmanager.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2   // naikkan version supaya recreate
 
         const val TABLE_TASKS = "tasks"
         const val COL_ID = "id"
@@ -42,6 +41,26 @@ class TaskDbHelper(context: Context) :
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_TASKS")
         onCreate(db)
+    }
+
+    // INSERT / REPLACE (untuk sync)
+    fun insertOrReplaceTask(task: TaskModel): Long {
+        val db = writableDatabase
+        val cv = ContentValues().apply {
+            put(COL_ID, task.id)
+            put(COL_TITLE, task.title)
+            put(COL_DESC, task.description)
+            put(COL_SUBJECT, task.subject)
+            put(COL_DEADLINE, task.deadlineMillis)
+            put(COL_PRIORITY, task.priority)
+            put(COL_STATUS, task.status)
+        }
+        return db.insertWithOnConflict(
+            TABLE_TASKS,
+            null,
+            cv,
+            SQLiteDatabase.CONFLICT_REPLACE
+        )
     }
 
     fun insertTask(task: TaskModel): Long {
@@ -78,23 +97,35 @@ class TaskDbHelper(context: Context) :
     fun getAllTasks(): List<TaskModel> {
         val list = mutableListOf<TaskModel>()
         val db = readableDatabase
-        val cursor = db.query(TABLE_TASKS, null, null, null, null, null, "$COL_DEADLINE ASC")
+
+        val cursor = db.query(
+            TABLE_TASKS, null,
+            null, null, null, null,
+            "$COL_DEADLINE ASC"
+        )
+
         cursor.use {
             if (it.moveToFirst()) {
                 do {
-                    val t = TaskModel(
-                        id = it.getLong(it.getColumnIndexOrThrow(COL_ID)),
-                        title = it.getString(it.getColumnIndexOrThrow(COL_TITLE)),
-                        description = it.getString(it.getColumnIndexOrThrow(COL_DESC)),
-                        subject = it.getString(it.getColumnIndexOrThrow(COL_SUBJECT)),
-                        deadlineMillis = it.getLong(it.getColumnIndexOrThrow(COL_DEADLINE)),
-                        priority = it.getInt(it.getColumnIndexOrThrow(COL_PRIORITY)),
-                        status = it.getInt(it.getColumnIndexOrThrow(COL_STATUS))
+                    list.add(
+                        TaskModel(
+                            id = it.getLong(it.getColumnIndexOrThrow(COL_ID)),
+                            title = it.getString(it.getColumnIndexOrThrow(COL_TITLE)),
+                            description = it.getString(it.getColumnIndexOrThrow(COL_DESC)),
+                            subject = it.getString(it.getColumnIndexOrThrow(COL_SUBJECT)),
+                            deadlineMillis = it.getLong(it.getColumnIndexOrThrow(COL_DEADLINE)),
+                            priority = it.getInt(it.getColumnIndexOrThrow(COL_PRIORITY)),
+                            status = it.getInt(it.getColumnIndexOrThrow(COL_STATUS)),
+                        )
                     )
-                    list.add(t)
                 } while (it.moveToNext())
             }
         }
         return list
+    }
+
+    fun clearAllTasks() {
+        val db = writableDatabase
+        db.delete(TABLE_TASKS, null, null)
     }
 }

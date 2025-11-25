@@ -7,6 +7,7 @@ import com.example.taskmanager.data.model.TaskModel
 import com.example.taskmanager.data.repository.TaskRepository
 import kotlinx.coroutines.launch
 
+
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val repo = TaskRepository(application)
 
@@ -18,10 +19,22 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun sync() {
+        viewModelScope.launch {
+            repo.syncTasksFromCloud()
+        }
+    }
+
     fun addTask(task: TaskModel, onComplete: ((Long) -> Unit)? = null) {
         viewModelScope.launch {
             val id = repo.addTask(task)
             onComplete?.invoke(id)
+        }
+    }
+
+    fun createTask(task: TaskModel) {
+        viewModelScope.launch {
+            repo.createTask(task)
         }
     }
 
@@ -36,4 +49,5 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             repo.deleteTask(id)
         }
     }
+
 }
