@@ -1,5 +1,6 @@
 package com.example.taskmanager.data.model
 
+//this for remote storage
 data class TaskApiModel(
     val judul: String,
     val deskripsi: String?,

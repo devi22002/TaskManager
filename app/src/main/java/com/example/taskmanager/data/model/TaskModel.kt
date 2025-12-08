@@ -1,5 +1,6 @@
 package com.example.taskmanager.data.model
 
+//this for local storage
 data class TaskModel(
     val id: Long = 0,
     val title: String,

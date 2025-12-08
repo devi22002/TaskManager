@@ -23,7 +23,9 @@ interface ApiService {
 
     // TUGAS / TASK
     @GET("tugas")
-    suspend fun getAllTasks(): Response<List<TaskApiModel>>
+    suspend fun getAllTasks(
+        @Header("email") email: String
+    ): Response<List<TaskApiModel>>
 
     @POST("tugas")
     suspend fun createTask(

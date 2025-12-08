@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 class TaskRepository(context: Context) {
 
     private val dbHelper = TaskDbHelper(context.applicationContext)
+    private val userRepository = UserRepository(context.applicationContext)
 
     // Retrofit REAL API
     private val api: ApiService = RetrofitClient.instance.create(ApiService::class.java)
@@ -25,20 +26,22 @@ class TaskRepository(context: Context) {
     // 1) SYNC FROM CLOUD → LOCAL
     suspend fun syncTasksFromCloud() {
         withContext(Dispatchers.IO) {
-            val res = api.getAllTasks()   // GET /tugas
+            val userEmail = userRepository.getEmail()
+            if (userEmail != null) {
+                val res = api.getAllTasks(email = userEmail)
 
-            if (res.isSuccessful) {
-                val apiList = res.body() ?: emptyList()
+                if (res.isSuccessful) {
+                    val apiList = res.body() ?: emptyList()
+                    val localList = apiList.map { TaskMapper.fromApi(it) }
 
-                val localList = apiList.map { TaskMapper.fromApi(it) }
+                    // clear old local data
+                    dbHelper.clearAllTasks()
 
-                // clear old local data
-                dbHelper.clearAllTasks()
+                    // save new local data
+                    localList.forEach { dbHelper.insertTask(it) }
 
-                // save new local data
-                localList.forEach { dbHelper.insertTask(it) }
-
-                _tasks.postValue(localList)
+                    _tasks.postValue(localList)
+                }
             }
         }
     }
