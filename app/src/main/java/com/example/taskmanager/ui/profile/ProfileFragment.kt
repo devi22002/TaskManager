@@ -29,14 +29,23 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userEmail = viewModel.getUserEmail()
-        binding.tvName.text = "User TaskManager"
-        binding.tvEmail.text = userEmail
+        // Ambil data profil dari server
+        viewModel.fetchProfile()
 
+        // Observe perubahan pada data profil
+        viewModel.profile.observe(viewLifecycleOwner) { profile ->
+            binding.tvName.text = profile?.get("nama") as? String ?: "N/A"
+            binding.tvEmail.text = profile?.get("email") as? String ?: "N/A"
+            binding.tvNpm.text = profile?.get("npm") as? String ?: "N/A"
+            binding.tvProdi.text = profile?.get("prodi") as? String ?: "N/A"
+        }
+
+        // Listener untuk tombol logout
         binding.btnLogout.setOnClickListener {
             viewModel.logout()
         }
 
+        // Observe proses logout
         viewModel.logoutComplete.observe(viewLifecycleOwner) { isComplete ->
             if (isComplete) {
                 (activity as? MainActivity)?.setBottomBarVisibility(View.GONE)

@@ -27,29 +27,24 @@ class TaskAdapter(
             // --- Deadline
             b.txtDeadline.text = "Deadline: ${formatDate(t.deadlineMillis)}"
 
-            // --- Priority Chip
-            b.chipPriority.visibility = if (t.priority == 1) View.VISIBLE else View.GONE
+            // --- Label Prioritas (Hanya muncul jika prioritas=1 DAN status=0)
+            b.chipPriority.visibility = if (t.priority == 1 && t.status == 0) View.VISIBLE else View.GONE
 
-            // --- Status Chip (warna + teks)
-            val d = daysLeft(t.deadlineMillis)
-
-            when {
-                t.status == 1 -> {  // selesai
-                    b.chipStatus.text = "Selesai"
-                    b.chipStatus.setTextColor(ContextCompat.getColor(b.root.context, android.R.color.white))
-                    b.chipStatus.setBackgroundResource(R.drawable.bg_chip_green)
-                    b.imgStatus.setImageResource(R.drawable.ic_done)
-                }
-                d <= 3 -> {  // deadline mepet
-                    b.chipStatus.text = "Mendatang"
-                    b.chipStatus.setTextColor(ContextCompat.getColor(b.root.context, android.R.color.white))
-                    b.chipStatus.setBackgroundResource(R.drawable.bg_chip_red)
+            if (t.status == 1) {  // TUGAS SELESAI
+                b.chipStatus.text = "Selesai"
+                b.chipStatus.setTextColor(ContextCompat.getColor(b.root.context, android.R.color.white))
+                b.chipStatus.setBackgroundResource(R.drawable.bg_chip_green)
+                b.imgStatus.setImageResource(R.drawable.ic_done)
+            } else {    // TUGAS BELUM SELESAI
+                b.chipStatus.text = "On Progress"
+                b.chipStatus.setTextColor(ContextCompat.getColor(b.root.context, android.R.color.black))
+                b.chipStatus.setBackgroundResource(R.drawable.bg_chip_normal)
+                
+                // --- (BARU) LOGIKA IKON --- 
+                // Jika prioritas, ikon jam merah. Jika tidak, ikon tugas biasa.
+                if (t.priority == 1) {
                     b.imgStatus.setImageResource(R.drawable.ic_clock)
-                }
-                else -> {    // aman
-                    b.chipStatus.text = "On Progress"
-                    b.chipStatus.setTextColor(ContextCompat.getColor(b.root.context, android.R.color.white))
-                    b.chipStatus.setBackgroundResource(R.drawable.bg_chip_yellow)
+                } else {
                     b.imgStatus.setImageResource(R.drawable.ic_task)
                 }
             }
@@ -73,16 +68,8 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
-    // --- Helpers -----------------------------------------
-
     private fun formatDate(millis: Long): String {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return sdf.format(Date(millis))
-    }
-
-    fun daysLeft(deadlineMillis: Long): Int {
-        val now = System.currentTimeMillis()
-        val diff = deadlineMillis - now
-        return (diff / (1000 * 60 * 60 * 24)).toInt()
     }
 }

@@ -39,9 +39,9 @@
         <EditText
             android:id="@+id/inputTitle"
             android:hint="Cari tugas atau mata kuliah..."
-            android:padding="16dp"
+            android:padding="14dp"
             android:background="@drawable/bg_input"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="48dp"/>
 
@@ -114,10 +114,11 @@
 
             <TextView
                 android:id="@+id/txtDeadline"
-                android:text="Pilih Tanggal"
                 android:layout_width="0dp"
+                android:layout_height="26dp"
+                android:layout_gravity=""
                 android:layout_weight="1"
-                android:layout_height="wrap_content"/>
+                android:text="Pilih Tanggal" />
 
             <ImageView
                 android:src="@drawable/ic_calendar"

@@ -1,5 +1,6 @@
 package com.example.taskmanager.network
 
+import com.example.taskmanager.data.model.CreateTaskRequest
 import com.example.taskmanager.data.model.TaskApiModel
 import retrofit2.Response
 import retrofit2.http.*
@@ -19,7 +20,7 @@ interface ApiService {
 
     // PROFILE USER
     @GET("me")
-    suspend fun getProfile(): Response<Map<String, Any>>
+    suspend fun getProfile(@Header("email") email: String): Response<Map<String, Any>>
 
     // TUGAS / TASK
     @GET("tugas")
@@ -29,7 +30,7 @@ interface ApiService {
 
     @POST("tugas")
     suspend fun createTask(
-        @Body body: Map<String, Any>
+        @Body body: CreateTaskRequest
     ): Response<TaskApiModel>
 
     @PATCH("tugas/{id}/status")

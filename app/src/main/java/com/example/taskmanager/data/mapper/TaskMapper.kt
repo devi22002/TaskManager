@@ -1,5 +1,6 @@
 package com.example.taskmanager.data.mapper
 
+import com.example.taskmanager.data.model.CreateTaskRequest
 import com.example.taskmanager.data.model.TaskModel
 import com.example.taskmanager.data.model.TaskApiModel
 import java.time.LocalDateTime
@@ -14,30 +15,33 @@ object TaskMapper {
         val localDateTime = LocalDateTime.parse(api.deadline, formatter)
         val deadlineMillis = localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
 
+        val currentTimeMillis = System.currentTimeMillis()
+        val threeDaysInMillis = 3 * 24 * 60 * 60 * 1000L
+
+        val isHighPriority = (deadlineMillis - currentTimeMillis) <= threeDaysInMillis && deadlineMillis > currentTimeMillis
+
         return TaskModel(
-            id = api.id, // ← penting: cloud ID = local ID
+            id = api.id,
             title = api.judul,
             description = api.deskripsi ?: "",
-            subject = api.matakuliah_id.toString(),
+            subject = api.matakuliah_nama ?: "N/A",
             deadlineMillis = deadlineMillis,
-            priority = when (api.prioritas.lowercase()) {
-                "tinggi" -> 1
-                else -> 0
-            },
+            priority = if (isHighPriority) 1 else 0, 
             status = if (api.is_done) 1 else 0
         )
     }
 
-    fun toApiBody(task: TaskModel): Map<String, Any> {
+    fun toApiBody(task: TaskModel, userId: Int): CreateTaskRequest {
         val instant = java.time.Instant.ofEpochMilli(task.deadlineMillis)
         val deadlineString = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).format(formatter)
 
-        return mapOf(
-            "judul" to task.title,
-            "deskripsi" to (task.description ?: ""),
-            "prioritas" to if (task.priority == 1) "Tinggi" else "Sedang",
-            "deadline" to deadlineString,
-            "matakuliah_id" to (task.subject.toIntOrNull() ?: 0)
+        return CreateTaskRequest(
+            judul = task.title,
+            deskripsi = task.description ?: "",
+            deadline = deadlineString,
+            matakuliahId = task.subject.toIntOrNull() ?: 0, 
+            userId = userId,
+            prioritas = "Sedang" // Eksplisit mengirim "Sedang"
         )
     }
 }

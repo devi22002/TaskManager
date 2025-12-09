@@ -26,7 +26,7 @@ class TaskDbHelper(context: Context) :
     override fun onCreate(db: SQLiteDatabase) {
         val create = """
             CREATE TABLE $TABLE_TASKS (
-                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_ID INTEGER PRIMARY KEY,
                 $COL_TITLE TEXT NOT NULL,
                 $COL_DESC TEXT,
                 $COL_SUBJECT TEXT,
@@ -66,6 +66,7 @@ class TaskDbHelper(context: Context) :
     fun insertTask(task: TaskModel): Long {
         val db = writableDatabase
         val cv = ContentValues().apply {
+            put(COL_ID, task.id)
             put(COL_TITLE, task.title)
             put(COL_DESC, task.description)
             put(COL_SUBJECT, task.subject)

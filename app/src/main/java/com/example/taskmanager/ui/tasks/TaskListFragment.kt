@@ -4,36 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanager.adapter.TaskAdapter
 import com.example.taskmanager.data.model.TaskModel
 import com.example.taskmanager.databinding.FragmentTaskListBinding
+import com.example.taskmanager.viewmodel.AddTaskViewModel
 import com.example.taskmanager.viewmodel.TaskViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import androidx.core.widget.addTextChangedListener
-
 
 class TaskListFragment : Fragment() {
 
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
 
-    private val vm: TaskViewModel by viewModels()
+    // ViewModel untuk mengambil daftar TUGAS
+    private val taskViewModel: TaskViewModel by viewModels()
+    // ViewModel untuk mengambil daftar MATA KULIAH
+    private val addTaskViewModel: AddTaskViewModel by viewModels()
+
     private lateinit var adapter: TaskAdapter
 
     private var selectedMatkul: String? = null
     private var selectedStatus: String? = null
 
-    private val listMatkul = listOf(
-        "Semua",
-        "Pemrograman Mobile",
-        "Sistem Basis Data",
-        "Kalkulus",
-        "Algoritma Struktur Data",
-        "Jaringan Komputer"
-    )
+    // Daftar mata kuliah sekarang dinamis
+    private var dynamicListMatkul = listOf("Semua")
 
     private val listStatus = listOf(
         "Semua",
@@ -56,21 +54,31 @@ class TaskListFragment : Fragment() {
         selectedMatkul = "Semua"
         selectedStatus = "Semua"
 
-        vm.loadTasks()
+        // Ambil data tugas dan mata kuliah dari server
+        taskViewModel.loadTasks()
+        addTaskViewModel.fetchMatakuliah()
 
-        vm.tasks.observe(viewLifecycleOwner) {
+        // Observe perubahan pada daftar tugas
+        taskViewModel.tasks.observe(viewLifecycleOwner) {
             applyFilter()
+        }
+
+        // (BARU) Observe perubahan pada daftar mata kuliah
+        addTaskViewModel.matakuliahList.observe(viewLifecycleOwner) { matakuliahList ->
+            val matakuliahNames = matakuliahList.mapNotNull { it["nama"] as? String }
+            dynamicListMatkul = listOf("Semua") + matakuliahNames // Tambahkan "Semua" di awal
         }
 
         binding.inputSearch.addTextChangedListener {
             applyFilter()
         }
 
+        // (BARU) OnClickListener sekarang menggunakan daftar dinamis
         binding.filterMatkul.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Pilih Mata Kuliah")
-                .setItems(listMatkul.toTypedArray()) { _, index ->
-                    selectedMatkul = listMatkul[index]
+                .setItems(dynamicListMatkul.toTypedArray()) { _, index ->
+                    selectedMatkul = dynamicListMatkul[index]
                     binding.filterMatkul.text = selectedMatkul
                     applyFilter()
                 }
@@ -91,12 +99,11 @@ class TaskListFragment : Fragment() {
 
 
     private fun applyFilter() {
-        val original = vm.tasks.value ?: emptyList()
+        val original = taskViewModel.tasks.value ?: emptyList()
         val search = binding.inputSearch.text.toString().trim().lowercase()
 
         var filtered = original
 
-        // Filter Search
         if (search.isNotEmpty()) {
             filtered = filtered.filter {
                 it.title.lowercase().contains(search) ||
@@ -104,14 +111,12 @@ class TaskListFragment : Fragment() {
             }
         }
 
-        // Filter Matkul
         selectedMatkul?.let { m ->
             if (m != "Semua") {
                 filtered = filtered.filter { it.subject == m }
             }
         }
 
-        // Filter Status
         selectedStatus?.let { s ->
             filtered = when (s) {
                 "Selesai" -> filtered.filter { it.status == 1 }
@@ -125,7 +130,7 @@ class TaskListFragment : Fragment() {
 
     private fun onTaskClick(task: TaskModel) {
         val changed = task.copy(status = if (task.status == 1) 0 else 1)
-        vm.updateTask(changed)
+        taskViewModel.updateTask(changed)
     }
 
     override fun onDestroyView() {

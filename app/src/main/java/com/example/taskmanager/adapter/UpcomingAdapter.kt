@@ -9,7 +9,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class UpcomingAdapter(
-    private var list: List<TaskModel>
+    private var list: List<TaskModel>,
+    private val onItemClick: (TaskModel) -> Unit // Ditambahkan
 ) : RecyclerView.Adapter<UpcomingAdapter.VH>() {
 
     inner class VH(private val b: ItemTaskSmallBinding)
@@ -19,6 +20,9 @@ class UpcomingAdapter(
             b.tvTitle.text = t.title
             b.tvSubject.text = t.subject
             b.tvDeadline.text = formatDate(t.deadlineMillis)
+            
+            // Click listener ditambahkan di sini
+            b.root.setOnClickListener { onItemClick(t) }
         }
     }
 
