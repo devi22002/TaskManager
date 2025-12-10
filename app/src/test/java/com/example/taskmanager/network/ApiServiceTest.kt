@@ -1,5 +1,6 @@
 package com.example.taskmanager.network
 
+import com.example.taskmanager.data.model.CreateTaskRequest
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.example.taskmanager.data.model.TaskApiModel
@@ -33,100 +34,109 @@ class ApiServiceTest {
     }
 
     @Test
-    fun `getAllTasks should return a list of tasks`() = runBlocking {
-        val taskList = listOf(
-            TaskApiModel(1, "Task 1", "Description 1", "2024-05-20", false),
-            TaskApiModel(2, "Task 2", "Description 2", "2024-05-21", true)
-        )
-        val response = MockResponse()
-            .setBody(Gson().toJson(taskList))
-            .setResponseCode(200)
+    fun `getAllTasks should return a list of tasks`() {
+        runBlocking {
+            val taskList = listOf(
+                TaskApiModel("Task 1", "Description 1", "2024-05-20", false, "Tinggi", 1, 1, 1, "2024-01-01", "2024-01-01", "Web"),
+                TaskApiModel("Task 2", "Description 2", "2024-05-21", true, "Rendah", 1, 2, 1, "2024-01-01", "2024-01-01", "Web")
+            )
+            val response = MockResponse()
+                .setBody(Gson().toJson(taskList))
+                .setResponseCode(200)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.getAllTasks()
+            val result = apiService.getAllTasks("test@example.com")
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()).hasSize(2)
-        assertThat(result.body()?.get(0)?.namaTugas).isEqualTo("Task 1")
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()).hasSize(2)
+            assertThat(result.body()?.get(0)?.judul).isEqualTo("Task 1")
+        }
     }
 
     @Test
-    fun `createTask should return the created task`() = runBlocking {
-        val newTask = TaskApiModel(3, "New Task", "New Description", "2024-05-22", false)
-        val response = MockResponse()
-            .setBody(Gson().toJson(newTask))
-            .setResponseCode(201)
+    fun `createTask should return the created task`() {
+        runBlocking {
+            val newTaskRequest = CreateTaskRequest("New Task", "New Description", "Sedang", "2024-05-22", 1, 1, false)
+            val createdTask = TaskApiModel("New Task", "New Description", "2024-05-22", false, "Sedang", 1, 3, 1, "2024-01-01", "2024-01-01", "Web")
+            val response = MockResponse()
+                .setBody(Gson().toJson(createdTask))
+                .setResponseCode(201)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.createTask(mapOf(
-            "namaTugas" to "New Task",
-            "deskripsi" to "New Description",
-            "tanggal" to "2024-05-22"
-        ))
+            val result = apiService.createTask(newTaskRequest)
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()?.namaTugas).isEqualTo("New Task")
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()?.judul).isEqualTo("New Task")
+        }
     }
 
     @Test
-    fun `updateTaskStatus should return the updated task`() = runBlocking {
-        val updatedTask = TaskApiModel(1, "Task 1", "Description 1", "2024-05-20", true)
-        val response = MockResponse()
-            .setBody(Gson().toJson(updatedTask))
-            .setResponseCode(200)
+    fun `updateTaskStatus should return the updated task`() {
+        runBlocking {
+            val updatedTask = TaskApiModel("Task 1", "Description 1", "2024-05-20", true, "Tinggi", 1, 1, 1, "2024-01-01", "2024-01-01", "Web")
+            val response = MockResponse()
+                .setBody(Gson().toJson(updatedTask))
+                .setResponseCode(200)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.updateTaskStatus(1, mapOf("status" to true))
+            val result = apiService.updateTaskStatus(1, mapOf("is_done" to true))
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()?.status).isTrue()
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()?.is_done).isTrue()
+        }
     }
 
     @Test
-    fun `getTaskById should return a single task`() = runBlocking {
-        val task = TaskApiModel(1, "Task 1", "Description 1", "2024-05-20", false)
-        val response = MockResponse()
-            .setBody(Gson().toJson(task))
-            .setResponseCode(200)
+    fun `getTaskById should return a single task`() {
+        runBlocking {
+            val task = TaskApiModel("Task 1", "Description 1", "2024-05-20", false, "Tinggi", 1, 1, 1, "2024-01-01", "2024-01-01", "Web")
+            val response = MockResponse()
+                .setBody(Gson().toJson(task))
+                .setResponseCode(200)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.getTaskById(1)
+            val result = apiService.getTaskById(1)
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()?.namaTugas).isEqualTo("Task 1")
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()?.judul).isEqualTo("Task 1")
+        }
     }
 
     @Test
-    fun `getProfile should return user profile`() = runBlocking {
-        val profile = mapOf("name" to "Umaru", "email" to "umaru@example.com")
-        val response = MockResponse()
-            .setBody(Gson().toJson(profile))
-            .setResponseCode(200)
+    fun `getProfile should return user profile`() {
+        runBlocking {
+            val profile = mapOf("name" to "Umaru", "email" to "umaru@example.com")
+            val response = MockResponse()
+                .setBody(Gson().toJson(profile))
+                .setResponseCode(200)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.getProfile()
+            val result = apiService.getProfile("umaru@example.com")
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()?.get("name")).isEqualTo("Umaru")
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()?.get("name")).isEqualTo("Umaru")
+        }
     }
 
     @Test
-    fun `getMatakuliah should return a list of subjects`() = runBlocking {
-        val matakuliah = listOf(mapOf("name" to "Mobile Programming"))
-        val response = MockResponse()
-            .setBody(Gson().toJson(matakuliah))
-            .setResponseCode(200)
+    fun `getMatakuliah should return a list of subjects`() {
+        runBlocking {
+            val matakuliah = listOf(mapOf("name" to "Mobile Programming"))
+            val response = MockResponse()
+                .setBody(Gson().toJson(matakuliah))
+                .setResponseCode(200)
 
-        server.enqueue(response)
+            server.enqueue(response)
 
-        val result = apiService.getMatakuliah()
+            val result = apiService.getMatakuliah()
 
-        assertThat(result.isSuccessful).isTrue()
-        assertThat(result.body()?.get(0)?.get("name")).isEqualTo("Mobile Programming")
+            assertThat(result.isSuccessful).isTrue()
+            assertThat(result.body()?.get(0)?.get("name")).isEqualTo("Mobile Programming")
+        }
     }
 }

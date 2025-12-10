@@ -14,11 +14,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskManager">
-
-
-        <activity android:name=".ui.tasks.AddTaskFragment" />
-        <activity android:name=".ui.tasks.TaskListFragment" />
-        <activity android:name=".ui.home.HomeFragment" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
